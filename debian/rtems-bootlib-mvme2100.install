@@ -1,0 +1,3 @@
+usr/powerpc-rtems*/mvme2100/lib/include/bsp/bootLib.h
+usr/powerpc-rtems*/mvme2100/lib/include/bsp/NVRAMaccess.h
+usr/powerpc-rtems*/mvme2100/lib/libbootLib.a

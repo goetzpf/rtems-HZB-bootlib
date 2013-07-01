@@ -5,7 +5,7 @@
 #       Template library Makefile
 #
 
-LIBNAME=bootLib.a        # xxx- your library names goes here
+LIBNAME=libbootLib.a        # xxx- your library names goes here
 LIB=${ARCH}/${LIBNAME}
 
 # C and C++ source names, if any, go here -- minus the .c or .cc

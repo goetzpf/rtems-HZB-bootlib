@@ -1,3 +1,9 @@
+rtems-bootlib (1.0-3) unstable; urgency=low
+
+  * library name corrected to libbootLib.a and untracked files addes to repo
+
+ -- Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>  Mon, 01 Jul 2013 10:50:41 +0200
+
 rtems-bootlib (1.0-2) unstable; urgency=low
 
   * debianized upstream version
