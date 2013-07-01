@@ -1,0 +1,5 @@
+rtems-bootlib (1.0-1) unstable; urgency=low
+
+  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+
+ -- Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>  Mon, 01 Jul 2013 07:50:44 +0200
