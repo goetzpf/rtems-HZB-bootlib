@@ -1,5 +1,11 @@
+rtems-bootlib (1.0-2) unstable; urgency=low
+
+  * debianized upstream version
+
+ -- Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>  Mon, 01 Jul 2013 09:37:41 +0200
+
 rtems-bootlib (1.0-1) unstable; urgency=low
 
   * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
 
- -- Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>  Mon, 01 Jul 2013 07:50:44 +0200
+ -- Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>  Mon, 01 Jul 2013 08:52:12 +0200
