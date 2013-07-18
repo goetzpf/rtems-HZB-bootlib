@@ -20,6 +20,7 @@
 #include <netinet/in.h>
 
 #define DEFAULT_SUBNETMASK 0xFFFFFF00
+#define DEFAULT_SUBNETMASK_STR "255.255.255.0"
 
 
 /*+**************************************************************************
@@ -69,6 +70,35 @@ static void byteCopy(volatile char *dest, volatile char *src, int len)
 }
 
 
+static void killargs(char *str, char *args)
+{
+    char *eptr;
+    int i, len = strlen(args);
+
+    while ((*str != '\n') && (*str != '\0')) /* scan only actual line */
+    {
+        if (*str == '-') /* param found! */
+        {
+            eptr = str + 1;
+            /* eptr points to the first char after argument string */
+            while ((*eptr != '\n') && (*eptr != ' ') && (*eptr != '\0')) ++eptr;
+            if (*eptr == ' ') ++eptr;
+
+            for (i = 0; i < len; ++i)
+                if (*(str + 1) == args[i])
+                {
+#ifdef DEBUG
+                    printf("killing arg -%c\n", args[i]);
+#endif
+                    memmove(str, eptr, strlen(eptr) + 1);
+                    break;
+                }
+            if (i == len) str = eptr; /* move pointer to next arg / EOL / EOF */
+        } else ++str;
+    }
+}
+
+
 static void getsubstr(char *buf, char *dest, int maxlen, char *marker)
 {
     int len;
@@ -89,6 +119,17 @@ static void getsubstr(char *buf, char *dest, int maxlen, char *marker)
     dest[len] = 0;
 }
 
+static char* cvrtsmask(char *str, char *dest)
+{
+    char tmp[9];
+    int a = 0, b = 0, c = 0, d = 0;
+
+    sscanf(str, "%i.%i.%i.%i", &a, &b, &c, &d);
+    sprintf(tmp, "%02x%02x%02x%02x", a, b, c, d);
+    if (dest == NULL) return strdup(tmp);
+    strcpy(dest, tmp);
+    return dest;
+}
 
 #ifdef DEBUG
 void printBootString(BOOT_PARAMS *ptr)
