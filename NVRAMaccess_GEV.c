@@ -9,7 +9,7 @@
  * Author(s):      Dan Eichel
  *
  * Copyright (c) 2013     Helmholtz-Zentrum Berlin 
- *                     fuer Materialilien und Energie
+ *                      fuer Materialien und Energie
  *                            Berlin, Germany
  *
  **************************************************************************-*/
@@ -20,7 +20,7 @@
 
 #include "NVRAMaccess.h"
 
-#if !defined(GEV_START) || !defined(GEV_SIZE)
+#if !(defined(GEV_START) || defined(BSP_I2C_VPD_EEPROM_DEV_NAME)) && !defined(GEV_SIZE)
 	#error "GEV startaddress / size for target arch not defined!"
 #endif
 
@@ -124,7 +124,7 @@ static int getIndex(const char *str)
     
     for (i = 0; i < knownItems - 1; ++i)
     	if (strcmp(GEVhash[i], str) == 0) return i;
-    return knownItems - 1; /* otheritems */
+    return knownItems - 1; /* otheritem */
 }
 
 #if 0
@@ -195,12 +195,35 @@ static void printGEVstruct(void)
 
 static void fillGEVstruct(void)
 {
-    volatile char *ptr = NULL, *nvp = (volatile char *) (GEV_START);
+    volatile char *ptr = NULL;
     char c, *key = NULL, *value = NULL;
     int modus = 0, index;
-    
-	memset((void *) &GEVstruct, 0, sizeof(GEVstruct));
 
+#if defined(GEV_START)    
+    volatile char *nvp = (volatile char *) (GEV_START);
+#else
+    volatile char *nvp;
+    char gev_buf[GEV_SIZE];
+    int fd;
+#endif    
+    
+#if defined(BSP_I2C_VPD_EEPROM_DEV_NAME)
+    if ((fd = open(BSP_I2C_VPD_EEPROM_DEV_NAME, 0)) < 0) {
+        printf("Can't open %s\n", BSP_I2C_VPD_EEPROM_DEV_NAME);
+        return;
+    }
+    lseek(fd, BSP_I2C_VPD_EEPROM_OFFSET, SEEK_SET);
+    if (read(fd, gev_buf, sizeof gev_buf) != sizeof gev_buf) {
+        printf("Can't read %s\n", BSP_I2C_VPD_EEPROM_DEV_NAME);
+        return;
+    }
+    close(fd);
+    nvp = gev_buf;
+#elif !defined(GEV_START)
+#  error "No way to read GEV!"
+#endif
+
+	memset((void *) &GEVstruct, 0, sizeof(GEVstruct));
     if (*nvp == '\0') return;
     while (((c = *nvp) != '\0') || (modus == 2)) /* read til last variable */
     {
@@ -297,12 +320,17 @@ static void fillGEVstruct(void)
 
 static void flushGEVstruct(void)
 {
-    volatile char *nvp = (volatile char *) (GEV_START);
-    char *endaddr = (char *) (GEV_START + GEV_SIZE);
-    
     nvpair *ptr;
     int i;
-    
+#if defined(GEV_START)    
+    volatile char *nvp = (volatile char *) (GEV_START);
+    char *endaddr = (char *) (GEV_START + GEV_SIZE);
+#else
+    char gev_buf[GEV_SIZE];
+    char *nvp = (char *) &gev_buf;
+    char *endaddr = (char *) (nvp + GEV_SIZE);
+#endif
+   
     for (i = 0; i < knownItems; ++i)
     {
     	if (GEVptr[i]->name != NULL)
@@ -335,6 +363,9 @@ static void flushGEVstruct(void)
         }
     }
     while (nvp < endaddr) *nvp++ = 0x0; /* fill NVRAM with zeros */
+#ifdef WRITEBACKFUNCTION
+    WRITEBACKFUNCTION((char *) &gev_buf);
+#endif    
 }
 
 
@@ -535,7 +566,7 @@ void writeNVram(BOOT_PARAMS *ptr)
     	GEVstruct.boot_flags.name = strdup(GEVhash[21]);
     if (GEVstruct.boot_flags.value != NULL) free(GEVstruct.boot_flags.value);
     GEVstruct.boot_flags.value = malloc(8);
-    sprintf(GEVstruct.host_name.value, "0x%i", ptr->flags);
+    sprintf(GEVstruct.boot_flags.value, "0x%i", ptr->flags);
 
     /* patch motscript */
     sprintf(buf, "%s%i", ptr->bootDev, ptr->unitNum);
@@ -582,8 +613,8 @@ void writeNVram(BOOT_PARAMS *ptr)
     }
     if ((GEVstruct.motscript.name == NULL) || (script_corrupted)) /* set new motscript */
     {
-    	char part1[] = "dla=malloc 0x280000\ntftpGet -d/dev/";
-        char part2[] = " -adla\nnetShut\ngo -adla";
+    	char part1[] = MOTSCRIPT_PART1;
+        char part2[] = MOTSCRIPT_PART2;
         
     	if (GEVstruct.motscript.name != NULL) free(GEVstruct.motscript.name);
     	GEVstruct.motscript.name = strdup(GEVhash[0]);

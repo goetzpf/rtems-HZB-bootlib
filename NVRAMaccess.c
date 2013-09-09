@@ -10,7 +10,7 @@
  * Author(s):      Dan Eichel
  *
  * Copyright (c) 2013     Helmholtz-Zentrum Berlin 
- *                     fuer Materialilien und Energie
+ *                      fuer Materialien und Energie
  *                            Berlin, Germany
  *
  **************************************************************************-*/
@@ -134,6 +134,7 @@ static char* cvrtsmask(char *str, char *dest)
 #ifdef DEBUG
 void printBootString(BOOT_PARAMS *ptr)
 {
+   char buf[256];
    /* generate vxWorks boot string */
    printf(buf, "%s(%i,%i)%s:%s e=%s b=%s h=%s g=%s u=%s pw=%s f=0x%x tn=%s s=%s o=%s", \
        ptr->bootDev, ptr->unitNum, ptr->procNum, ptr->hostName, ptr->bootFile, \
