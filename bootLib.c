@@ -9,7 +9,7 @@
  * Author(s):      Dan Eichel
  *
  * Copyright (c) 2013     Helmholtz-Zentrum Berlin 
- *                      fuer Materialien und Energie
+ *                     fuer Materialien und Energie
  *                            Berlin, Germany
  *
  **************************************************************************-*/
