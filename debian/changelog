@@ -1,3 +1,11 @@
+rtems-bootlib (1.0-6) unstable; urgency=low
+
+  * support for mvme3100 added by Dan.Eichel@helmholtz-berlin.de
+  * debian: add packaging for mvme3100
+  * debian: add Ralph Lange to Uploaders
+
+ -- Ralph Lange <Ralph.Lange@helmholtz-berlin.de>  Mon, 16 Sep 2013 12:20:05 +0200
+
 rtems-bootlib (1.0-5) unstable; urgency=low
 
   * support for mvme5500 added by Dan.Eichel@helmholtz-berlin.de

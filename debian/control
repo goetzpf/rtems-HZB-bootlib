@@ -2,9 +2,10 @@ Source: rtems-bootlib
 Section: devel
 Priority: extra
 Maintainer: Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>
+Uploaders: Ralph Lange <Ralph.Lange@helmholtz-berlin.de>
 Build-Depends: debhelper (>= 7), rtems-debhelper, cdbs,
                rtems-common (<< 4.10),
-               rtems-mvme2100 (<<4.10), rtems-mvme5500 (<<4.10),
+               rtems-mvme2100 (<<4.10), rtems-mvme3100 (<<4.10), rtems-mvme5500 (<<4.10),
 Rtems-Depends: rtems
 Standards-Version: 3.8.0
 Homepage: http://www.helmholtz-berlin.de
@@ -15,6 +16,14 @@ Depends: ${rtems:Depends}
 Description: bootline manipulation lib for rtems-bsp mvme2100 
  This rtems library contains routines for manipulating a boot line. 
  Routines are provided to interpret, construct, store 
+ and load a boot line.
+
+Package: rtems-bootlib-mvme3100
+Architecture: all
+Depends: ${rtems:Depends}
+Description: bootline manipulation lib for rtems-bsp mvme3100
+ This rtems library contains routines for manipulating a boot line.
+ Routines are provided to interpret, construct, store
  and load a boot line.
 
 Package: rtems-bootlib-mvme5500

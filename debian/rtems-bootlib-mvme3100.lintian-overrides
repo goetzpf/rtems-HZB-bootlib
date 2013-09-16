@@ -1,0 +1,4 @@
+rtems-bootlib-mvme3100 binary: non-standard-dir-in-usr
+rtems-bootlib-mvme3100 binary: file-in-unusual-dir
+# Cross compile lives in usr/*/include an similar
+rtems-bootlib-mvme3100: arch-independent-package-contains-binary-or-object
