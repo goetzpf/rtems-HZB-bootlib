@@ -100,17 +100,17 @@ void readNVram(BOOT_PARAMS *ptr)
     cptr = strstr(buf, "f="); if (cptr != NULL) ptr->flags = strtol(cptr + 2, NULL, 16); else ptr->flags = 0;
 
     /* override with ppc bug settings, if present */
-    addrToStr(buf, bug_map.ClientIPAddress); strcpy(ptr->ead, buf);
+    bootlib_addrToStr(buf, bug_map.ClientIPAddress); strcpy(ptr->ead, buf);
     if (bug_map.SubnetIPAddressMask != DEFAULT_SUBNETMASK)
     {
         sprintf(buf, ":%x", (unsigned int) bug_map.SubnetIPAddressMask);
         strcat(ptr->ead, buf);
     }
-    if (addrToStr(buf, bug_map.ServerIPAddress) != NULL) strcpy(ptr->had, buf);
+    if (bootlib_addrToStr(buf, bug_map.ServerIPAddress) != NULL) strcpy(ptr->had, buf);
     
     if (bug_map.GatewayIPAddress != 0)
     {
-        if (addrToStr(buf, bug_map.GatewayIPAddress) != NULL) strcpy(ptr->gad, buf);
+        if (bootlib_addrToStr(buf, bug_map.GatewayIPAddress) != NULL) strcpy(ptr->gad, buf);
     } else ptr->gad[0] = 0;
     
     strcpy(bug_map.BootFilenameString, ptr->bootFile);
@@ -142,12 +142,12 @@ void writeNVram(BOOT_PARAMS *ptr)
     if ((cptr = strchr(buf, ':')) != NULL) /* subnet mask found */
     {
         *cptr++ = 0; /* split inetaddr and subnet mask */
-        bug_map.SubnetIPAddressMask = (uint32_t) myatoul(cptr);
+        bug_map.SubnetIPAddressMask = (uint32_t) bootlib_atoul(cptr);
     } else bug_map.SubnetIPAddressMask = DEFAULT_SUBNETMASK; /* default: 255.255.255.0 */
-    bug_map.ClientIPAddress = addrToInt(buf);
-    bug_map.ServerIPAddress = addrToInt(ptr->had);
+    bug_map.ClientIPAddress = bootlib_addrToInt(buf);
+    bug_map.ServerIPAddress = bootlib_addrToInt(ptr->had);
     if (strlen(ptr->gad) > 0) 
-        bug_map.GatewayIPAddress = addrToInt(ptr->gad);
+        bug_map.GatewayIPAddress = bootlib_addrToInt(ptr->gad);
     else
         bug_map.GatewayIPAddress = 0;
 

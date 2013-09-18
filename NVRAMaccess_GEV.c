@@ -393,7 +393,7 @@ void readNVram(BOOT_PARAMS *ptr)
     else
         strcpy(ptr->bootDev, "enet0");
 
-    ptr->unitNum = myatoul((char *) (ptr->bootDev + 4)); /* parse unit number */
+    ptr->unitNum = bootlib_atoul((char *) (ptr->bootDev + 4)); /* parse unit number */
     ptr->bootDev[4] = 0; /* adjust bootdevice */
     
 /* begin offset area */
@@ -504,7 +504,7 @@ void writeNVram(BOOT_PARAMS *ptr)
         GEVptr[bootdev + 3]->value = strdup(DEFAULT_SUBNETMASK_STR);
     else
     {
-		unsigned long addr = myatoul(cptr + 1);
+		unsigned long addr = bootlib_atoul(cptr + 1);
         
         GEVptr[bootdev + 3]->value = malloc(16);
         sprintf(GEVptr[bootdev + 3]->value, "%lu.%lu.%lu.%lu", \

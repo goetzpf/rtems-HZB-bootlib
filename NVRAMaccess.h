@@ -4,7 +4,7 @@
  * Module:         NVRAM boot parameters access
  * File:           NVRAMaccess.h
  *
- * Description:    Interface for NVRAM access
+ * Description:    Interface for NVRAM access and some useful tools
  *
  * Author(s):      Dan Eichel
  *
@@ -18,6 +18,11 @@
 #define __NVRAMACCESS__
 
 #include "bootLib.h"
+
+#define DEFAULT_SUBNETMASK 0xFFFFFF00
+#define DEFAULT_SUBNETMASK_STR "255.255.255.0"
+
+
 
 /*+**************************************************************************
  *
@@ -47,5 +52,51 @@ extern void readNVram(BOOT_PARAMS *ptr);
  *
  **************************************************************************-*/
 extern void writeNVram(BOOT_PARAMS *ptr);
+
+
+/*+**************************************************************************
+ *
+ * Function:    bootlib_addrToStr
+ *
+ * Description: This function converts the network address
+ *              into a character string
+ *
+ * Arg In:      1) pointer to string buffer
+ *              2) network address
+ *
+ * Return(s):   pointer to string buffer filled with address in dot notation
+ *
+ **************************************************************************-*/
+extern char *bootlib_addrToStr(char *cbuf, uint32_t addr);
+
+
+/*+**************************************************************************
+ *
+ * Function:    bootlib_addrToInt
+ *
+ * Description: This function converts the character string into a
+ *              network address
+ *
+ * Arg In:      pointer to character string containing address in dot notation
+ *
+ * Return(s):   network address
+ *
+ **************************************************************************-*/
+extern int bootlib_addrToInt(char *cbuf);
+
+
+/*+**************************************************************************
+ *
+ * Function:    bootlib_atoul
+ *
+ * Description: converts strings to integers, in opposite to stdlib
+ *              atoul it can handle also strings up to 8 char length
+ *
+ * Arg In:      pointer to string
+ *
+ * Return(s):   numerical string interpretation
+ *
+ **************************************************************************-*/
+extern unsigned int bootlib_atoul(char *ptr);
 
 #endif /* __NVRAMACCESS__ */

@@ -17,17 +17,22 @@
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
-#include <netinet/in.h>
-
-#define DEFAULT_SUBNETMASK 0xFFFFFF00
-#define DEFAULT_SUBNETMASK_STR "255.255.255.0"
 
 
 /*+**************************************************************************
- *  helper functions
+ *
+ * Function:    bootlib_addrToStr
+ *
+ * Description: This function converts the network address
+ *              into a character string
+ *
+ * Arg In:      1) pointer to string buffer
+ *              2) network address
+ *
+ * Return(s):   pointer to string buffer filled with address in dot notation
+ *
  **************************************************************************-*/
-
-char *addrToStr(char *cbuf, uint32_t addr)
+char *bootlib_addrToStr(char *cbuf, uint32_t addr)
 {
     struct in_addr a;
 
@@ -37,7 +42,19 @@ char *addrToStr(char *cbuf, uint32_t addr)
 }
 
 
-int addrToInt(char *cbuf)
+/*+**************************************************************************
+ *
+ * Function:    bootlib_addrToInt
+ *
+ * Description: This function converts the character string into a
+ *              network address
+ *
+ * Arg In:      pointer to character string containing address in dot notation
+ *
+ * Return(s):   network address
+ *
+ **************************************************************************-*/
+int bootlib_addrToInt(char *cbuf)
 {
     struct in_addr a;
     
@@ -46,14 +63,27 @@ int addrToInt(char *cbuf)
 }
 
 
-unsigned int myatoul(char *ptr)
+/*+**************************************************************************
+ *
+ * Function:    bootlib_atoul
+ *
+ * Description: converts strings to integers, in opposite to stdlib
+ *              atoul it can handle also strings up to 8 char length
+ *
+ * Arg In:      pointer to string
+ *
+ * Return(s):   numerical string interpretation
+ *
+ **************************************************************************-*/
+unsigned int bootlib_atoul(char *ptr)
 {
     unsigned int hi = 0;
     int offs = 0;
-    char buf[5];
     
     if (strlen(ptr) > 4) /* read first word */
     {
+    	char buf[5];
+        
         buf[4] = 0;
         strncpy(buf, ptr, 4);
         hi = strtol(buf, NULL, 16) << 16;
@@ -62,6 +92,10 @@ unsigned int myatoul(char *ptr)
     return (hi | (strtol(ptr + offs, NULL, 16) & 0xFFFF));
 }
 
+
+/*+**************************************************************************
+ *  internal helper functions
+ **************************************************************************-*/
 
 static void byteCopy(volatile char *dest, volatile char *src, int len)
 {
