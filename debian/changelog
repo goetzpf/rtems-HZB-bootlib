@@ -1,3 +1,9 @@
+rtems-bootlib (1.0-7) unstable; urgency=low
+
+  * Upstream updates by Dan.Eichel@helmholtz-berlin.de
+
+ -- Ralph Lange <Ralph.Lange@gmx.de>  Thu, 19 Sep 2013 12:54:48 +0200
+
 rtems-bootlib (1.0-6) unstable; urgency=low
 
   * support for mvme3100 added by Dan.Eichel@helmholtz-berlin.de
