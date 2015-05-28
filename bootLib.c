@@ -43,10 +43,11 @@ char *BOOT_LINE_ADRS = NULL;
  * Return(s):   0 - success
  *
  **************************************************************************-*/
-int bootStructToString(char *paramString, BOOT_PARAMS *pBootParams)
+int
+bootStructToString (char *paramString, BOOT_PARAMS * pBootParams)
 {
-    writeNVram(pBootParams);
-    return 0;
+  writeNVram (pBootParams);
+  return 0;
 }
 
 
@@ -64,9 +65,9 @@ int bootStructToString(char *paramString, BOOT_PARAMS *pBootParams)
  *              pointer to bootString
  *
  **************************************************************************-*/
-char *bootStringToStruct(char *bootString, BOOT_PARAMS *pBootParams)
+char *
+bootStringToStruct (char *bootString, BOOT_PARAMS * pBootParams)
 {
-    readNVram(pBootParams);
-    return bootString;
+  readNVram (pBootParams);
+  return bootString;
 }
-

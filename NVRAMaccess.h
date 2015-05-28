@@ -19,7 +19,7 @@
 
 #include "bootLib.h"
 
-#define DEFAULT_SUBNETMASK 0xFFFFFF00
+#define DEFAULT_SUBNETMASK     0xFFFFFF00
 #define DEFAULT_SUBNETMASK_STR "255.255.255.0"
 
 
@@ -36,7 +36,7 @@
  * Return(s):   none
  *
  **************************************************************************-*/
-extern void readNVram(BOOT_PARAMS *ptr);
+extern void readNVram (BOOT_PARAMS * ptr);
 
 
 /*+**************************************************************************
@@ -51,7 +51,7 @@ extern void readNVram(BOOT_PARAMS *ptr);
  * Return(s):   none
  *
  **************************************************************************-*/
-extern void writeNVram(BOOT_PARAMS *ptr);
+extern void writeNVram (BOOT_PARAMS * ptr);
 
 
 /*+**************************************************************************
@@ -67,7 +67,7 @@ extern void writeNVram(BOOT_PARAMS *ptr);
  * Return(s):   pointer to string buffer filled with address in dot notation
  *
  **************************************************************************-*/
-extern char *bootlib_addrToStr(char *cbuf, uint32_t addr);
+extern char *bootlib_addrToStr (char *cbuf, uint32_t addr);
 
 
 /*+**************************************************************************
@@ -82,7 +82,7 @@ extern char *bootlib_addrToStr(char *cbuf, uint32_t addr);
  * Return(s):   network address
  *
  **************************************************************************-*/
-extern int bootlib_addrToInt(char *cbuf);
+extern int bootlib_addrToInt (char *cbuf);
 
 
 /*+**************************************************************************
@@ -97,6 +97,6 @@ extern int bootlib_addrToInt(char *cbuf);
  * Return(s):   numerical string interpretation
  *
  **************************************************************************-*/
-extern unsigned int bootlib_atoul(char *ptr);
+extern unsigned int bootlib_atoul (char *ptr);
 
 #endif /* __NVRAMACCESS__ */
