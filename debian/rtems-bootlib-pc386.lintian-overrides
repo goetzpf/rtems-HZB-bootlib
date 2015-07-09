@@ -1,0 +1,4 @@
+rtems-bootlib-pc386 binary: non-standard-dir-in-usr
+rtems-bootlib-pc386 binary: file-in-unusual-dir
+# Cross compile lives in usr/*/include an similar
+rtems-bootlib-pc386: arch-independent-package-contains-binary-or-object

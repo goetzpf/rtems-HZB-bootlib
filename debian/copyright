@@ -4,7 +4,7 @@ Upstream-Contact: Dan.Eichel@helmholtz-berlin.de
 Source: http://www.helmholtz-berlin.de
 
 Files: *
-Copyright: 2013 Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>
+Copyright: 2013 Dan Eichel <Dan.Eichel@helmholtz-berlin.de>
 License: GPL-2+
  This package is free software; you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
