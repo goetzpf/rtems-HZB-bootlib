@@ -1,8 +1,8 @@
 Source: rtems-bootlib
 Section: devel
 Priority: extra
-Maintainer: Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>
-Uploaders: Ralph Lange <Ralph.Lange@helmholtz-berlin.de>
+Maintainer: Christoph Schröder <christoph.schroeder@helmholtz-berlin.de>
+Uploaders: Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>
 Build-Depends: debhelper (>= 7), rtems-debhelper, cdbs,
                rtems-common (>= 4.9.6-1~),
                rtems-mvme2100 (>= 4.9.6-1~), rtems-mvme2307 (>= 4.9.6-1~),
