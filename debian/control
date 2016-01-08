@@ -3,7 +3,7 @@ Section: devel
 Priority: extra
 Maintainer: Christoph Schröder <christoph.schroeder@helmholtz-berlin.de>
 Uploaders: Joachim Rahn <Joachim.Rahn@helmholtz-berlin.de>
-Build-Depends: debhelper (>= 7), rtems-debhelper, cdbs,
+Build-Depends: debhelper (>= 9), rtems-debhelper, cdbs,
                rtems-common (>= 4.9.6-1~),
                rtems-mvme2100 (>= 4.9.6-1~), rtems-mvme2307 (>= 4.9.6-1~),
                rtems-mvme3100 (>= 4.9.6-1~), rtems-mvme5500 (>= 4.9.6-1~),

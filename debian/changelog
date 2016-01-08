@@ -1,3 +1,9 @@
+rtems-bootlib (1.0-8~bpo70~hzb4) wheezy; urgency=medium
+
+  * Revert "mvme2100: some fixes on vxBoot parser routine, supressing write back of empty parameters."
+
+ -- Christoph Schröder <christoph.schroeder@helmholtz-berlin.de>  Fri, 08 Jan 2016 15:11:29 +0100
+
 rtems-bootlib (1.0-8~bpo70~hzb2) wheezy; urgency=medium
 
   [ Dan Eichel ]
