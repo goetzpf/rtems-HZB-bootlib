@@ -48,7 +48,8 @@ typedef struct
   char     ArgumentFilenameString[64];
 } ppcbug_nvram;
 
-/* include private helper functions... */
+/* include private helper functions */
+/* it isn't good coding style, but it is so convenient :-) */
 #include "NVRAMaccess.c"
 
 
@@ -68,7 +69,7 @@ void
 readNVram (BOOT_PARAMS * ptr)
 {
   ppcbug_nvram bug_map;
-  char buf[512], *cptr;
+  char buf[512], *cptr, *dot;
 
   /* read vxWorks boot parameters */
   byteCopy ((volatile char *) &buf, (volatile char *) NVRAM_VXPARAMS,
@@ -80,39 +81,71 @@ readNVram (BOOT_PARAMS * ptr)
            "193.149.12.200:ffffff00", "", "193.149.12.29", "1", "ioc", "2",
            0x88, "box0", "/opt/test.st.cmd", "");
 #endif
+#if 0
+  sprintf (buf,
+           "%s:%s e=%s h=%s u=%s f=%i tn=%s s=%s o=%s",
+           "vwhost", "/opt/tftfdir/vxWorks.st",
+           "193.149.12.200:ffffff00", "193.149.12.29", "ioc",
+           0x88, "box0", "/opt/test.st.cmd", "");
+#endif
+#if 0
+  printf("\n\nvxBootStr: %s\n\n", buf);
+
+#endif
 
   /* read ppcbug environment out */
   byteCopy ((volatile char *) &bug_map, (volatile char *) NVRAM_BUGPARAMS,
             sizeof (bug_map));
 
+  /* find the first marker, tile string into two parts */ 
+  dot = strchr (buf, ':');
+  if (dot == NULL)
+  {
+    dot = buf;
+    buf[1] = '\0'; /* invalidate whole bootstring */
+  }
+  *dot = '\0';
+  
   cptr = strchr (buf, '(');
   if (cptr != NULL)
+  {
     *cptr = ' ';
-  cptr = strchr (buf, ',');
-  if (cptr != NULL)
-    *cptr = ' ';
-  cptr = strchr (buf, ')');
-  if (cptr != NULL)
-    *cptr = ' ';
-  cptr = strchr (buf, ':');
-  if (cptr != NULL)
-    *cptr = ' ';                /* between boothost and filename */
-
-  sscanf (buf, "%s %i %i %s %s",
+    
+    cptr = strchr (buf, ',');
+    if (cptr != NULL) *cptr = ' ';
+    
+    cptr = strchr (buf, ')');
+    if (cptr != NULL) *cptr = ' ';
+    
+    sscanf (buf, "%s %i %i %s",
           ptr->bootDev, (int *) &(ptr->unitNum), (int *) &(ptr->procNum),
-          ptr->hostName, ptr->bootFile);
+          ptr->hostName);
+  } else
+  {
+    /* if none information is present take defaults */
+    strcpy(ptr->bootDev, "dc");
+    ptr->unitNum = 1;
+    ptr->procNum = 0;
 
-  getsubstr (buf, ptr->ead, param_lengths[3], "e=");    /* ead */
-  getsubstr (buf, ptr->bad, param_lengths[4], "b=");    /* bad */
-  getsubstr (buf, ptr->had, param_lengths[5], "h=");    /* had */
-  getsubstr (buf, ptr->gad, param_lengths[6], "g=");    /* gad */
-  getsubstr (buf, ptr->usr, param_lengths[9], "u=");    /* usr */
-  getsubstr (buf, ptr->passwd, param_lengths[10], "pw=");       /* passwd */
-  getsubstr (buf, ptr->targetName, param_lengths[2], "tn=");    /* targetName */
-  getsubstr (buf, ptr->startupScript, param_lengths[8], "s=");  /* startupScript */
-  getsubstr (buf, ptr->other, param_lengths[11], "o="); /* other */
+    if (strlen(buf))
+      sscanf (buf, "%s", ptr->hostName);
+    else
+      ptr->hostName[0] = '\0';
+  }
 
-  cptr = strstr (buf, "f=");
+  sscanf (++dot, "%s", ptr->bootFile);
+
+  getsubstr (dot, ptr->ead, param_lengths[3], "e=");    /* ead */
+  getsubstr (dot, ptr->bad, param_lengths[4], "b=");    /* bad */
+  getsubstr (dot, ptr->had, param_lengths[5], "h=");    /* had */
+  getsubstr (dot, ptr->gad, param_lengths[6], "g=");    /* gad */
+  getsubstr (dot, ptr->usr, param_lengths[9], "u=");    /* usr */
+  getsubstr (dot, ptr->passwd, param_lengths[10], "pw=");       /* passwd */
+  getsubstr (dot, ptr->targetName, param_lengths[2], "tn=");    /* targetName */
+  getsubstr (dot, ptr->startupScript, param_lengths[8], "s=");  /* startupScript */
+  getsubstr (dot, ptr->other, param_lengths[11], "o="); /* other */
+
+  cptr = strstr (dot, "f=");
   if (cptr != NULL)
     ptr->flags = strtol (cptr + 2, NULL, 16);
   else
@@ -121,7 +154,7 @@ readNVram (BOOT_PARAMS * ptr)
   /* override with ppc bug settings, if present */
   bootlib_addrToStr (buf, bug_map.ClientIPAddress);
   strcpy (ptr->ead, buf);
-  if (bug_map.SubnetIPAddressMask != DEFAULT_SUBNETMASK)
+/*  if (bug_map.SubnetIPAddressMask != DEFAULT_SUBNETMASK) */
     {
       sprintf (buf, ":%x", (unsigned int) bug_map.SubnetIPAddressMask);
       strcat (ptr->ead, buf);
@@ -137,9 +170,32 @@ readNVram (BOOT_PARAMS * ptr)
   else
     ptr->gad[0] = 0;
 
-  strcpy (bug_map.BootFilenameString, ptr->bootFile);
+  /* take always ppcbug bootfile */
+  strcpy (ptr->bootFile, bug_map.BootFilenameString);
 }
 
+
+/*+**************************************************************************
+ *
+ * Function:    appendString
+ *
+ * Description: conditional buffer append string pair function
+ *
+ * Arg In:      buf    - pointer to string buffer
+ *              prefix - string prefix
+ *              force  - 1: append even if str is ''
+ *                       0: append pair only if str isn't empty
+ *              str    - string to append
+ *
+ * Return(s):   none
+ *
+ **************************************************************************-*/
+static void
+appendString(char *buf, char *prefix, int force, char *str)
+{
+  if ((force == 1) || (*str != '\0'))
+    sprintf (buf + strlen(buf), " %s=%s", prefix, str);
+}
 
 /*+**************************************************************************
  *
@@ -184,14 +240,21 @@ writeNVram (BOOT_PARAMS * ptr)
   bug_map.ArgumentFilenameString[0] = 0;        /* delete argument */
 
   /* generate vxWorks boot string */
-  sprintf (buf,
-           "%s(%i,%i)%s:%s e=%s b=%s h=%s g=%s u=%s pw=%s f=0x%x tn=%s s=%s o=%s",
-           ptr->bootDev, ptr->unitNum, ptr->procNum, ptr->hostName,
-           ptr->bootFile, ptr->ead, ptr->bad, ptr->had, ptr->gad, ptr->usr,
-           ptr->passwd, ptr->flags, ptr->targetName, ptr->startupScript,
-           ptr->other);
+  sprintf (buf, "%s(%i,%i)%s:%s",
+           ptr->bootDev, ptr->unitNum, ptr->procNum, ptr->hostName, ptr->bootFile);
 
-  /* write vxWorks parameter into NVRAM */
+  appendString(buf, "e", 1, ptr->ead);
+  appendString(buf, "b", 0, ptr->bad);
+  appendString(buf, "h", 1, ptr->had);
+  appendString(buf, "g", 0, ptr->gad);
+  appendString(buf, "u", 1, ptr->usr);
+  appendString(buf, "pw",0, ptr->passwd);
+  sprintf (buf + strlen(buf), " f=0x%x", ptr->flags);
+  appendString(buf, "tn",1, ptr->targetName);
+  appendString(buf, "s", 1, ptr->startupScript);
+  appendString(buf, "o", 0, ptr->other);
+
+  /* write vxWorks parameters into NVRAM */
   byteCopy ((volatile char *) NVRAM_VXPARAMS, (volatile char *) &buf,
             sizeof (buf));
 
