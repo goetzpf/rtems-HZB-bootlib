@@ -1,3 +1,16 @@
+rtems-bootlib (1.0-8~bpo70~hzb5) wheezy; urgency=medium
+
+  [ Benjamin Franksen ]
+  * do not install under bsp subdir
+
+  [ Dan Eichel ]
+  * some bugs in parser implementation fixed und some enhancements added
+
+  [ Christoph Schröder ]
+  * Revert "do not install under bsp subdir"
+
+ -- Christoph Schröder <christoph.schroeder@helmholtz-berlin.de>  Mon, 15 Feb 2016 13:31:39 +0100
+
 rtems-bootlib (1.0-8~bpo70~hzb4) wheezy; urgency=medium
 
   * Revert "mvme2100: some fixes on vxBoot parser routine, supressing write back of empty parameters."
