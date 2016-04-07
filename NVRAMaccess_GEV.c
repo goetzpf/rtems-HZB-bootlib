@@ -87,8 +87,8 @@ static nvpair *GEVptr[knownItems] = {
   &GEVstruct.epics_tz,
   &GEVstruct.rsh_user,
   &GEVstruct.tftp_pw,
-  &GEVstruct.boot_flags,
   &GEVstruct.host_name,
+  &GEVstruct.boot_flags,
   &GEVstruct.otherItems
 };
 
