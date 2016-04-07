@@ -32,7 +32,7 @@ include $(RTEMS_MAKEFILE_PATH)/Makefile.inc
 include $(RTEMS_CUSTOM)
 include $(RTEMS_ROOT)/make/lib.cfg
 
-ifneq ($(filter $(RTEMS_BSP),mvme2100 mvme3100 mvme5500)xx,xx)
+ifneq ($(filter $(RTEMS_BSP),mvme2100 mvme3100 mvme5500 beatnik)xx,xx)
 C_PIECES+=NVRAMaccess_$(RTEMS_BSP)
 else
 C_PIECES+=NVRAMaccess_dummy
