@@ -48,10 +48,14 @@ typedef struct
   char     ArgumentFilenameString[64];
 } ppcbug_nvram;
 
-/* include private helper functions */
-/* it isn't good coding style, but it is so convenient :-) */
-#include "NVRAMaccess.c"
 
+static void
+byteCopy (volatile char *dest, volatile char *src, int len)
+{
+  int i;
+  for (i = len; i > 0; --i, ++dest, ++src)
+    *dest = *src;
+}
 
 /*+**************************************************************************
  *
@@ -224,7 +228,7 @@ writeNVram (BOOT_PARAMS * ptr)
   if ((cptr = strchr (buf, ':')) != NULL)       /* subnet mask found */
     {
       *cptr++ = 0;              /* split inetaddr and subnet mask */
-      bug_map.SubnetIPAddressMask = (uint32_t) bootlib_atoul (cptr);
+      bug_map.SubnetIPAddressMask = strtoul(cptr, NULL, 16);
     }
   else
     bug_map.SubnetIPAddressMask = DEFAULT_SUBNETMASK;   /* default: 255.255.255.0 */

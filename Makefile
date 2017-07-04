@@ -8,7 +8,7 @@
 LIBNAME=libbootLib.a        # xxx- your library names goes here
 LIB=${ARCH}/${LIBNAME}
 
-C_PIECES=bootLib
+C_PIECES=bootLib NVRAMaccess
 # C and C++ source names, if any, go here -- minus the .c or .cc
 C_FILES=$(C_PIECES:%=%.c)
 C_O_FILES=$(C_PIECES:%=${ARCH}/%.o)
@@ -32,10 +32,16 @@ include $(RTEMS_MAKEFILE_PATH)/Makefile.inc
 include $(RTEMS_CUSTOM)
 include $(RTEMS_ROOT)/make/lib.cfg
 
-ifneq ($(filter $(RTEMS_BSP),mvme2100 mvme3100 mvme5500 beatnik)xx,xx)
-C_PIECES+=NVRAMaccess_$(RTEMS_BSP)
-else
+ifeq ($(wildcard NVRAMaccess_$(RTEMS_BSP).c),)
 C_PIECES+=NVRAMaccess_dummy
+else
+C_PIECES+=NVRAMaccess_$(RTEMS_BSP)
+endif
+
+ifeq ($(wildcard gev_$(RTEMS_BSP).c),)
+C_PIECES+=gev_dummy
+else
+C_PIECES+=gev_$(RTEMS_BSP)
 endif
 
 #

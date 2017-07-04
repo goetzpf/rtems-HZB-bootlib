@@ -87,16 +87,12 @@ extern int bootlib_addrToInt (char *cbuf);
 
 /*+**************************************************************************
  *
- * Function:    bootlib_atoul
- *
- * Description: converts strings to integers, in opposite to stdlib
- *              atoul it can handle also strings up to 8 char length
- *
- * Arg In:      pointer to string
- *
- * Return(s):   numerical string interpretation
+ * Internal helper functions
  *
  **************************************************************************-*/
-extern unsigned int bootlib_atoul (char *ptr);
+
+extern void getsubstr (char *buf, char *dest, int maxlen, char *marker);
+extern char *cvrtsmask (char *str, char *dest);
+
 
 #endif /* __NVRAMACCESS__ */

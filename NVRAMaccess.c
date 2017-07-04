@@ -15,6 +15,10 @@
  *
  **************************************************************************-*/
 
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
@@ -66,47 +70,8 @@ bootlib_addrToInt (char *cbuf)
 
 
 /*+**************************************************************************
- *
- * Function:    bootlib_atoul
- *
- * Description: converts strings to integers, in opposite to stdlib
- *              atoul it can handle also strings up to 8 char length
- *
- * Arg In:      pointer to string
- *
- * Return(s):   numerical string interpretation
- *
- **************************************************************************-*/
-unsigned int
-bootlib_atoul (char *ptr)
-{
-  unsigned int hi = 0;
-  int offs = 0;
-
-  if (strlen (ptr) > 4)         /* read first word */
-    {
-      char buf[5];
-
-      buf[4] = 0;
-      strncpy (buf, ptr, 4);
-      hi = strtol (buf, NULL, 16) << 16;
-      offs = 4;
-    }
-  return (hi | (strtol (ptr + offs, NULL, 16) & 0xFFFF));
-}
-
-
-/*+**************************************************************************
  *  internal helper functions
  **************************************************************************-*/
-
-static void
-byteCopy (volatile char *dest, volatile char *src, int len)
-{
-  int i;
-  for (i = len; i > 0; --i, ++dest, ++src)
-    *dest = *src;
-}
 
 
 static void
@@ -144,7 +109,7 @@ killargs (char *str, char *args)
 }
 
 
-static void
+void
 getsubstr (char *buf, char *dest, int maxlen, char *marker)
 {
   int len;
@@ -169,7 +134,7 @@ getsubstr (char *buf, char *dest, int maxlen, char *marker)
   dest[len] = 0;
 }
 
-static char *
+char *
 cvrtsmask (char *str, char *dest)
 {
   char tmp[9];
