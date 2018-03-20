@@ -17,7 +17,7 @@ CC_PIECES=
 CC_FILES=$(CC_PIECES:%=%.cc)
 CC_O_FILES=$(CC_PIECES:%=${ARCH}/%.o)
 
-H_FILES=bootLib.h NVRAMaccess.h
+H_FILES=bootLib.h NVRAMaccess.h bootLibGEV.h
 
 # Assembly source names, if any, go here -- minus the .S
 S_PIECES=

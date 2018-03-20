@@ -473,3 +473,14 @@ void gevDelete(char *name)
         fprintf(stderr, "gevDelete: key '%s' not found\n", name);
     }
 }
+
+void gevUpdate(const char *name, const char *value)
+{
+    gev_entry_t *e = gev_index.last;
+
+    while (e && strncmp(e->start, name, e->name_len)!=0) {
+        e = e->prev;
+    }
+    update_gev_entry(&e, name, value);
+    write_gev(gev_index.data, GEV_SIZE);
+}
