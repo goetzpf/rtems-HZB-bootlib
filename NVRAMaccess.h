@@ -14,8 +14,8 @@
  *
  **************************************************************************-*/
 
-#ifndef __NVRAMACCESS__
-#define __NVRAMACCESS__
+#ifndef NVRAMACCESS_H
+#define NVRAMACCESS_H
 
 #include "bootLib.h"
 
@@ -95,4 +95,4 @@ extern void getsubstr (char *buf, char *dest, int maxlen, char *marker);
 extern char *cvrtsmask (char *str, char *dest);
 
 
-#endif /* __NVRAMACCESS__ */
+#endif /* NVRAMACCESS_H */

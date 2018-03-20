@@ -14,8 +14,8 @@
  *
  **************************************************************************-*/
 
-#ifndef __BOOTLIB__
-#define __BOOTLIB__
+#ifndef BOOTLIB_H
+#define BOOTLIB_H
 
 #include <netinet/in.h>             /* uint32_t */
 
@@ -136,4 +136,4 @@ extern int bootStructToString (char *paramString, BOOT_PARAMS * pBootParams);
 extern char *bootStringToStruct (char *bootString, BOOT_PARAMS * pBootParams);
 
 
-#endif /* __BOOTLIB__ */
+#endif /* BOOTLIB_H */
