@@ -21,6 +21,8 @@
 #include "NVRAMaccess.h"
 
 
+#define min(a,b) ((a)<(b)?(a):(b))
+
 /* values for MVME2100 board */
 #define NVRAM_VXPARAMS     0xFF880100
 #define NVRAM_BUGPARAMS    0xFFE81000
@@ -218,6 +220,7 @@ writeNVram (BOOT_PARAMS * ptr)
 {
   ppcbug_nvram bug_map;
   char buf[512], *cptr;
+  const size_t fileNameLen = min(BOOT_FILE_LEN,64);
 
   /* read bug environment out */
   byteCopy ((volatile char *) &bug_map, (volatile char *) NVRAM_BUGPARAMS,
@@ -240,8 +243,10 @@ writeNVram (BOOT_PARAMS * ptr)
     bug_map.GatewayIPAddress = 0;
 
   ptr->bootFile[param_lengths[7] - 1] = 0;      /* truncate bootfile length */
-  strcpy (bug_map.BootFilenameString, ptr->bootFile);
-  bug_map.ArgumentFilenameString[0] = 0;        /* delete argument */
+  strncpy (bug_map.BootFilenameString, ptr->bootFile, fileNameLen);
+  bug_map.BootFilenameString[fileNameLen-1] = 0;
+  strncpy (bug_map.ArgumentFilenameString, ptr->startupScript, fileNameLen);
+  bug_map.ArgumentFilenameString[fileNameLen-1] = 0;
 
   /* generate vxWorks boot string */
   sprintf (buf, "%s(%i,%i)%s:%s",
