@@ -40,6 +40,7 @@ endif
 
 ifeq ($(wildcard gev_$(RTEMS_BSP).c),)
 C_PIECES+=gev_dummy
+C_PIECES+=bootLibGEV_dummy
 else
 C_PIECES+=gev_$(RTEMS_BSP)
 endif
