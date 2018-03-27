@@ -20,13 +20,12 @@
 
 #include "NVRAMaccess.h"
 
-
-#define min(a,b) ((a)<(b)?(a):(b))
-
 /* values for MVME2100 board */
 #define NVRAM_VXPARAMS     0xFF880100
 #define NVRAM_BUGPARAMS    0xFFE81000
 
+/* DO NOT change this struct, it is hard-coded in the ppc bug */
+#define BUG_FILE_NAME_LEN 64
 typedef struct
 {
   uint32_t PacketVersionIdentifier;
@@ -46,8 +45,8 @@ typedef struct
   uint8_t  TftpRarpRetry;
   uint8_t  BootpRarpControl;
   uint8_t  UpdateControl;
-  char     BootFilenameString[64];
-  char     ArgumentFilenameString[64];
+  char     BootFilenameString[BUG_FILE_NAME_LEN];
+  char     ArgumentFilenameString[BUG_FILE_NAME_LEN];
 } ppcbug_nvram;
 
 
@@ -57,6 +56,12 @@ byteCopy (volatile char *dest, volatile char *src, int len)
   int i;
   for (i = len; i > 0; --i, ++dest, ++src)
     *dest = *src;
+}
+
+static void safe_strncpy(char *dest, const char *src, size_t n)
+{
+    strncpy(dest, src, n);
+    dest[n-1] = 0;
 }
 
 /*+**************************************************************************
@@ -128,8 +133,8 @@ readNVram (BOOT_PARAMS * ptr)
           ptr->hostName);
   } else
   {
-    /* if none information is present take defaults */
-    strcpy(ptr->bootDev, "dc");
+    /* if no information is present take defaults */
+    safe_strncpy(ptr->bootDev, "dc", BOOT_DEV_LEN);
     ptr->unitNum = 1;
     ptr->procNum = 0;
 
@@ -139,17 +144,16 @@ readNVram (BOOT_PARAMS * ptr)
       ptr->hostName[0] = '\0';
   }
 
-  sscanf (++dot, "%s", ptr->bootFile);
-
-  getsubstr (dot, ptr->ead, param_lengths[3], "e=");    /* ead */
-  getsubstr (dot, ptr->bad, param_lengths[4], "b=");    /* bad */
-  getsubstr (dot, ptr->had, param_lengths[5], "h=");    /* had */
-  getsubstr (dot, ptr->gad, param_lengths[6], "g=");    /* gad */
-  getsubstr (dot, ptr->usr, param_lengths[9], "u=");    /* usr */
-  getsubstr (dot, ptr->passwd, param_lengths[10], "pw=");       /* passwd */
-  getsubstr (dot, ptr->targetName, param_lengths[2], "tn=");    /* targetName */
-  getsubstr (dot, ptr->startupScript, param_lengths[8], "s=");  /* startupScript */
-  getsubstr (dot, ptr->other, param_lengths[11], "o="); /* other */
+  getsubstr (dot, ptr->bootFile, BOOT_FILE_LEN, ":");
+  getsubstr (dot, ptr->ead, BOOT_TARGET_ADDR_LEN, "e=");    /* ead */
+  getsubstr (dot, ptr->bad, BOOT_TARGET_ADDR_LEN, "b=");    /* bad */
+  getsubstr (dot, ptr->had, BOOT_ADDR_LEN, "h=");    /* had */
+  getsubstr (dot, ptr->gad, BOOT_ADDR_LEN, "g=");    /* gad */
+  getsubstr (dot, ptr->usr, BOOT_USR_LEN, "u=");    /* usr */
+  getsubstr (dot, ptr->passwd, BOOT_PASSWORD_LEN, "pw=");       /* passwd */
+  getsubstr (dot, ptr->targetName, BOOT_HOST_LEN, "tn=");    /* targetName */
+  getsubstr (dot, ptr->startupScript, BOOT_FILE_LEN, "s=");  /* startupScript */
+  getsubstr (dot, ptr->other, BOOT_OTHER_LEN, "o="); /* other */
 
   cptr = strstr (dot, "f=");
   if (cptr != NULL)
@@ -159,25 +163,29 @@ readNVram (BOOT_PARAMS * ptr)
 
   /* override with ppc bug settings, if present */
   bootlib_addrToStr (buf, bug_map.ClientIPAddress);
-  strcpy (ptr->ead, buf);
+  safe_strncpy (ptr->ead, buf, BOOT_TARGET_ADDR_LEN);
 /*  if (bug_map.SubnetIPAddressMask != DEFAULT_SUBNETMASK) */
     {
       sprintf (buf, ":%x", (unsigned int) bug_map.SubnetIPAddressMask);
-      strcat (ptr->ead, buf);
+      strncat (ptr->ead, buf, BOOT_TARGET_ADDR_LEN-strlen(ptr->ead)-1);
     }
   if (bootlib_addrToStr (buf, bug_map.ServerIPAddress) != NULL)
-    strcpy (ptr->had, buf);
+    {
+      safe_strncpy (ptr->had, buf, BOOT_ADDR_LEN);
+    }
 
   if (bug_map.GatewayIPAddress != 0)
     {
       if (bootlib_addrToStr (buf, bug_map.GatewayIPAddress) != NULL)
-        strcpy (ptr->gad, buf);
+        safe_strncpy (ptr->gad, buf, BOOT_ADDR_LEN);
     }
   else
     ptr->gad[0] = 0;
 
-  /* take always ppcbug bootfile */
-  strcpy (ptr->bootFile, bug_map.BootFilenameString);
+  /* take always ppcbug bootfile, it cannot be empty else couldn't have booted */
+  safe_strncpy (ptr->bootFile, bug_map.BootFilenameString, BOOT_FILE_LEN);
+  if (bug_map.ArgumentFilenameString[0])
+    safe_strncpy (ptr->startupScript, bug_map.ArgumentFilenameString, BOOT_FILE_LEN);
 }
 
 
@@ -220,7 +228,6 @@ writeNVram (BOOT_PARAMS * ptr)
 {
   ppcbug_nvram bug_map;
   char buf[512], *cptr;
-  const size_t fileNameLen = min(BOOT_FILE_LEN,64);
 
   /* read bug environment out */
   byteCopy ((volatile char *) &bug_map, (volatile char *) NVRAM_BUGPARAMS,
@@ -242,11 +249,8 @@ writeNVram (BOOT_PARAMS * ptr)
   else
     bug_map.GatewayIPAddress = 0;
 
-  ptr->bootFile[param_lengths[7] - 1] = 0;      /* truncate bootfile length */
-  strncpy (bug_map.BootFilenameString, ptr->bootFile, fileNameLen);
-  bug_map.BootFilenameString[fileNameLen-1] = 0;
-  strncpy (bug_map.ArgumentFilenameString, ptr->startupScript, fileNameLen);
-  bug_map.ArgumentFilenameString[fileNameLen-1] = 0;
+  safe_strncpy (bug_map.BootFilenameString, ptr->bootFile, BUG_FILE_NAME_LEN);
+  safe_strncpy (bug_map.ArgumentFilenameString, ptr->startupScript, BUG_FILE_NAME_LEN);
 
   /* generate vxWorks boot string */
   sprintf (buf, "%s(%i,%i)%s:%s",
@@ -270,4 +274,14 @@ writeNVram (BOOT_PARAMS * ptr)
   /* write bug environment back */
   byteCopy ((volatile char *) NVRAM_BUGPARAMS, (volatile char *) &bug_map,
             sizeof (bug_map));
+}
+
+void printBootString (BOOT_PARAMS * ptr)
+{
+  /* generate vxWorks boot string */
+  printf ("%s(%i,%i)%s:%s e=%s b=%s h=%s g=%s u=%s pw=%s f=0x%x tn=%s s=%s o=%s",
+          ptr->bootDev, ptr->unitNum, ptr->procNum, ptr->hostName,
+          ptr->bootFile, ptr->ead, ptr->bad, ptr->had, ptr->gad, ptr->usr,
+          ptr->passwd, ptr->flags, ptr->targetName, ptr->startupScript,
+          ptr->other);
 }

@@ -68,46 +68,9 @@ bootlib_addrToInt (char *cbuf)
   return a.s_addr;
 }
 
-
 /*+**************************************************************************
  *  internal helper functions
  **************************************************************************-*/
-
-
-static void
-killargs (char *str, char *args)
-{
-  char *eptr;
-  int i, len = strlen (args);
-
-  while ((*str != '\n') && (*str != '\0'))      /* scan only actual line */
-    {
-      if (*str == '-')          /* param found! */
-        {
-          eptr = str + 1;
-          /* eptr points to the first char after argument string */
-          while ((*eptr != '\n') && (*eptr != ' ') && (*eptr != '\0'))
-            ++eptr;
-          if (*eptr == ' ')
-            ++eptr;
-
-          for (i = 0; i < len; ++i)
-            if (*(str + 1) == args[i])
-              {
-#ifdef DEBUG
-                printf ("killing arg -%c\n", args[i]);
-#endif
-                memmove (str, eptr, strlen (eptr) + 1);
-                break;
-              }
-          if (i == len)
-            str = eptr;         /* move pointer to next arg / EOL / EOF */
-        }
-      else
-        ++str;
-    }
-}
-
 
 void
 getsubstr (char *buf, char *dest, int maxlen, char *marker)
@@ -128,6 +91,7 @@ getsubstr (char *buf, char *dest, int maxlen, char *marker)
         len = maxlen;           /* adjust size */
       if (len != 0)             /* empty field */
         strncpy (dest, cptr, len);
+        dest[len-1] = 0;
     }
   else
     len = 0;
@@ -147,55 +111,3 @@ cvrtsmask (char *str, char *dest)
   strcpy (dest, tmp);
   return dest;
 }
-
-#ifdef DEBUG
-void
-printBootString (BOOT_PARAMS * ptr)
-{
-  char buf[256];
-  /* generate vxWorks boot string */
-  printf (buf,
-          "%s(%i,%i)%s:%s e=%s b=%s h=%s g=%s u=%s pw=%s f=0x%x tn=%s s=%s o=%s",
-          ptr->bootDev, ptr->unitNum, ptr->procNum, ptr->hostName,
-          ptr->bootFile, ptr->ead, ptr->bad, ptr->had, ptr->gad, ptr->usr,
-          ptr->passwd, ptr->flags, ptr->targetName, ptr->startupScript,
-          ptr->other);
-
-}
-
-#if 0
-void
-memgrep (char *str, unsigned long base)
-{
-  int i = 1024, b = 256, len;
-  volatile char *nvram = (char *) base;
-
-  len = strlen (str);
-  while (memcmp (nvram, str, len) != 0)
-    {
-      if (i == 1024)
-        printf ("searching 0x%X\n", base);
-      ++nvram;
-      ++base;
-      if (i)
-        --i;
-      else
-        i = 1024;
-    }
-  printf ("%s found at 0x%X\n", str, base);
-
-  printf ("0x%X :", (unsigned long) (base - b));
-  nvram = (char *) (base - b);
-  for (i = 0; i < 512; ++i)
-    {
-      if (*nvram > 31)          /* displayable charakter */
-        printf ("%c", *nvram);
-      else
-        printf (" ");
-
-      ++nvram;
-    }
-}
-#endif
-
-#endif
