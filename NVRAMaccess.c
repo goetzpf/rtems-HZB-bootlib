@@ -22,7 +22,6 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 
-
 /*+**************************************************************************
  *
  * Function:    bootlib_addrToStr
@@ -36,16 +35,14 @@
  * Return(s):   pointer to string buffer filled with address in dot notation
  *
  **************************************************************************-*/
-char *
-bootlib_addrToStr (char *cbuf, uint32_t addr)
+char *bootlib_addrToStr(char *cbuf, uint32_t addr)
 {
-  struct in_addr a;
+    struct in_addr a;
 
-  if ((a.s_addr = addr) == 0)
-    return NULL;
-  return (char *) inet_ntop (AF_INET, &a, cbuf, INET_ADDRSTRLEN);
+    if ((a.s_addr = addr) == 0)
+        return NULL;
+    return (char *)inet_ntop(AF_INET, &a, cbuf, INET_ADDRSTRLEN);
 }
-
 
 /*+**************************************************************************
  *
@@ -59,55 +56,50 @@ bootlib_addrToStr (char *cbuf, uint32_t addr)
  * Return(s):   network address
  *
  **************************************************************************-*/
-int
-bootlib_addrToInt (char *cbuf)
+int bootlib_addrToInt(char *cbuf)
 {
-  struct in_addr a;
+    struct in_addr a;
 
-  inet_pton (AF_INET, cbuf, &a);
-  return a.s_addr;
+    inet_pton(AF_INET, cbuf, &a);
+    return a.s_addr;
 }
 
 /*+**************************************************************************
  *  internal helper functions
  **************************************************************************-*/
 
-void
-getsubstr (char *buf, char *dest, int maxlen, char *marker)
+void getsubstr(char *buf, char *dest, int maxlen, char *marker)
 {
-  int len;
-  char *cptr, *eptr;
+    int len;
+    char *cptr, *eptr;
 
-  cptr = strstr (buf, marker);
-  if (cptr != NULL)
-    {
-      cptr += strlen (marker);
-      eptr = strchr (cptr, ' ');        /* find field delimiter */
-      if (eptr == NULL)
-        eptr = strchr (cptr, 0);        /* failed? looking for EOS */
+    cptr = strstr(buf, marker);
+    if (cptr != NULL) {
+        cptr += strlen(marker);
+        eptr = strchr(cptr, ' ');       /* find field delimiter */
+        if (eptr == NULL)
+            eptr = strchr(cptr, 0);     /* failed? looking for EOS */
 
-      len = (int) (eptr - cptr);        /* calc len */
-      if (len > maxlen)
-        len = maxlen;           /* adjust size */
-      if (len != 0)             /* empty field */
-        strncpy (dest, cptr, len);
-        dest[len-1] = 0;
-    }
-  else
-    len = 0;
-  dest[len] = 0;
+        len = (int)(eptr - cptr);       /* calc len */
+        if (len > maxlen)
+            len = maxlen;               /* adjust size */
+        if (len != 0)                   /* empty field */
+            strncpy(dest, cptr, len);
+        dest[len - 1] = 0;
+    } else
+        len = 0;
+    dest[len] = 0;
 }
 
-char *
-cvrtsmask (char *str, char *dest)
+char *cvrtsmask(char *str, char *dest)
 {
-  char tmp[9];
-  int a = 0, b = 0, c = 0, d = 0;
+    char tmp[9];
+    int a = 0, b = 0, c = 0, d = 0;
 
-  sscanf (str, "%i.%i.%i.%i", &a, &b, &c, &d);
-  sprintf (tmp, "%02x%02x%02x%02x", a, b, c, d);
-  if (dest == NULL)
-    return strdup (tmp);
-  strcpy (dest, tmp);
-  return dest;
+    sscanf(str, "%i.%i.%i.%i", &a, &b, &c, &d);
+    sprintf(tmp, "%02x%02x%02x%02x", a, b, c, d);
+    if (dest == NULL)
+        return strdup(tmp);
+    strcpy(dest, tmp);
+    return dest;
 }
