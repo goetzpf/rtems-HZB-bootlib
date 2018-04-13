@@ -57,8 +57,10 @@ static void byteCopy(volatile char *dest, volatile char *src, int len)
 
 static void safe_strncpy(char *dest, const char *src, size_t n)
 {
-    strncpy(dest, src, n);
-    dest[n - 1] = 0;
+    if (n > 0) {
+        strncpy(dest, src, n);
+        dest[n - 1] = 0;
+    }
 }
 
 /*+**************************************************************************

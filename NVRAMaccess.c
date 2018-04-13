@@ -83,9 +83,10 @@ void getsubstr(char *buf, char *dest, int maxlen, char *marker)
         len = (int)(eptr - cptr);       /* calc len */
         if (len > maxlen)
             len = maxlen;               /* adjust size */
-        if (len != 0)                   /* empty field */
+        if (len != 0) {                 /* empty field */
             strncpy(dest, cptr, len);
-        dest[len - 1] = 0;
+            dest[len - 1] = 0;
+        }
     } else
         len = 0;
     dest[len] = 0;
