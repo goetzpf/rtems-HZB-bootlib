@@ -15,6 +15,7 @@
  *
  **************************************************************************-*/
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -68,27 +69,33 @@ int bootlib_addrToInt(char *cbuf)
  *  internal helper functions
  **************************************************************************-*/
 
-void getsubstr(char *buf, char *dest, int maxlen, char *marker)
+/* From the input string, extract the text after the marker up to
+   (excluding) the next space or end of string, and copy it to dest. If the
+   marker is not found, the result (dest) is an empty string. The parameter
+   maxlen is the size of the dest buffer and must be positive, so we can at
+   least store a null byte. */
+void getsubstr(char *input, char *dest, size_t maxlen, char *marker)
 {
     int len;
-    char *cptr, *eptr;
+    char *start, *end;
 
-    cptr = strstr(buf, marker);
-    if (cptr != NULL) {
-        cptr += strlen(marker);
-        eptr = strchr(cptr, ' ');       /* find field delimiter */
-        if (eptr == NULL)
-            eptr = strchr(cptr, 0);     /* failed? looking for EOS */
+    assert(maxlen > 0);
+    start = strstr(input, marker);
+    if (start != NULL) {
+        start += strlen(marker);        /* field starts immediately after marker */
+        end = strchr(start, ' ');       /* find field delimiter */
+        if (end == NULL)
+            end = strchr(start, 0);     /* failed? looking for EOS */
 
-        len = (int)(eptr - cptr);       /* calc len */
-        if (len > maxlen)
-            len = maxlen;               /* adjust size */
+        len = (int)(end - start);       /* output string length */
+        if (len >= maxlen)
+            len = maxlen - 1;           /* adjust size */
         if (len != 0) {                 /* empty field */
-            strncpy(dest, cptr, len);
-            dest[len - 1] = 0;
+            strncpy(dest, start, len);
         }
-    } else
+    } else {
         len = 0;
+    }
     dest[len] = 0;
 }
 
