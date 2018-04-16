@@ -238,7 +238,7 @@ void readNVram(BOOT_PARAMS *boot_params)
                 value_of(gev_index.enet[bootdev].file), BOOT_FILE_LEN);
         else
             getsubstr(value_of(gev_index.motscript), boot_params->bootFile,
-                64, "-f");
+                BOOT_FILE_LEN, "-f");
     }
 
     if (gev_index.client_name)          /* get client name */
