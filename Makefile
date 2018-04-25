@@ -30,7 +30,12 @@ OBJS=$(C_O_FILES) $(CC_O_FILES) $(S_O_FILES)
 include $(RTEMS_MAKEFILE_PATH)/Makefile.inc
 
 include $(RTEMS_CUSTOM)
+ifdef RTEMS_SHARE
+# this variable is defined in RTEMS 5
+include $(RTEMS_SHARE)/make/lib.cfg
+else
 include $(RTEMS_ROOT)/make/lib.cfg
+endif
 
 ifeq ($(wildcard NVRAMaccess_$(RTEMS_BSP).c),)
 C_PIECES+=NVRAMaccess_dummy
