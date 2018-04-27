@@ -113,6 +113,7 @@ void readNVram(BOOT_PARAMS * ptr)
         buf[1] = '\0';                  /* invalidate whole bootstring */
     }
     *dot = '\0';
+    dot++;
 
     cptr = strchr(buf, '(');
     if (cptr != NULL) {
@@ -141,7 +142,7 @@ void readNVram(BOOT_PARAMS * ptr)
             ptr->hostName[0] = '\0';
     }
 
-    getsubstr(dot, ptr->bootFile, BOOT_FILE_LEN, ":");
+    getsubstr(dot, ptr->bootFile, BOOT_FILE_LEN, "");
     getsubstr(dot, ptr->ead, BOOT_TARGET_ADDR_LEN, "e="); /* ead */
     getsubstr(dot, ptr->bad, BOOT_TARGET_ADDR_LEN, "b="); /* bad */
     getsubstr(dot, ptr->had, BOOT_ADDR_LEN, "h="); /* had */
